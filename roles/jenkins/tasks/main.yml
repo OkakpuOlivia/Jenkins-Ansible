@@ -1,0 +1,48 @@
+# - name: Add Jenkins repository key
+#   apt_key:
+#     url: https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key
+#     keyring: /usr/share/keyrings/jenkins-keyring.asc
+#     state: present
+
+# - name: Add Jenkins APT repository
+#   apt_repository:
+#     repo: 'deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] https://pkg.jenkins.io/debian-stable binary/'
+#     state: present
+#     filename: jenkins
+
+# - name: Install Jenkins
+#   apt:
+#     name: jenkins
+#     state: present
+#     update_cache: yes
+
+# - name: Ensure Jenkins service is started
+#   systemd:
+#     name: jenkins
+#     state: started
+#     enabled: yes
+
+# - name: Add Jenkins repository GPG key
+#   get_url:
+#     url: https://pkg.jenkins.io/debian/jenkins.io.key
+#     dest: /usr/share/keyrings/jenkins.gpg
+
+# - name: Add Jenkins repository
+#   apt_repository:
+#     repo: "deb [signed-by=/usr/share/keyrings/jenkins.gpg] https://pkg.jenkins.io/debian binary/"
+#     state: present
+
+- name: Download Jenkins GPG key
+  ansible.builtin.get_url:
+    url: https://pkg.jenkins.io/debian/jenkins.io.key
+    dest: /usr/share/keyrings/jenkins-archive-keyring.gpg
+
+- name: Add Jenkins repository
+  ansible.builtin.apt_repository:
+    repo: "deb [signed-by=/usr/share/keyrings/jenkins-archive-keyring.gpg] https://pkg.jenkins.io/debian/ jenkins main"
+    state: present
+
+- name: Update apt cache
+  ansible.builtin.apt:
+    update_cache: yes
+    cache_valid_time: 3600
